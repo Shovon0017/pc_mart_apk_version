@@ -32,7 +32,7 @@ class NotificationShow extends StatelessWidget {
                     color: Colors.white,
                     child: Center(child: Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("Horem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum.",style: TextStyle(fontWeight: FontWeight.bold),),
+                      child: Text("new update avilable",style: TextStyle(fontWeight: FontWeight.bold),),
                     )),
                   ),
                 );

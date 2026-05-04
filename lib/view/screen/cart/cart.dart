@@ -7,16 +7,17 @@ import 'package:pc_mart/common%20widget/common_button.dart';
 import 'package:pc_mart/common%20widget/custom_order_shimmer_loading.dart';
 import 'package:pc_mart/controller/getX%20controller/product_Info.dart';
 import 'package:pc_mart/view/screen/OrderInfo/OrderInfo.dart';
+import 'package:pc_mart/view/screen/cart/widget/no_cart_data_found.dart' show NoCartProductFoundWidget;
 import 'package:pc_mart/view/screen/notification/notification.dart';
 
-import 'widget/no_cart_data_found.dart';
 class Cart extends StatelessWidget {
   const Cart({super.key});
 
   @override
   Widget build(BuildContext context) {
-    ProductInfoController cartController=Get.put(ProductInfoController());
+    ProductInfoController cartController = Get.put(ProductInfoController());
     Size size = MediaQuery.sizeOf(context);
+
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF),
       appBar: AppBar(
@@ -56,13 +57,9 @@ class Cart extends StatelessWidget {
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold)),
                             ])),
-                        Obx(
-                              () => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10),
-                            child: Text(
-                                "${cartController.cart.length}"),
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text("${cartController.cart.length}"),
                         ),
                       ],
                     ),
@@ -71,83 +68,93 @@ class Cart extends StatelessWidget {
                 const SizedBox(height: 5),
                 SizedBox(
                   height: size.height / 1.8,
-                  child: Obx(
-                        () => ListView.builder(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        shrinkWrap: true,
-                        itemCount: cartController.cart.length,
-                        itemBuilder: (_, index) {
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 5),
-                            surfaceTintColor: Colors.transparent,
-                            shape: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.withOpacity(.3), strokeAlign: BorderSide.strokeAlignOutside),
-                            ),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                    height: 80,
-                                    width:80,child: Image.asset("${cartController.cart[index].image}")),
-
-                                Expanded(
-                                  flex: 5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "${cartController.cart[index].nameEn}",style: TextStyle(fontSize: 15,overflow: TextOverflow.ellipsis),),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Price : ",style: TextStyle(
-                                              fontSize: 12,
+                  child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      shrinkWrap: true,
+                      itemCount: cartController.cart.length,
+                      itemBuilder: (_, index) {
+                        var product = cartController.cart[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          surfaceTintColor: Colors.transparent,
+                          shape: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Colors.grey.withOpacity(.3),
+                                strokeAlign: BorderSide.strokeAlignOutside),
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                  height: 80,
+                                  width: 80,
+                                  child: Image.asset("${product.image}")),
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 5),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "${product.nameEn}",
+                                        style: const TextStyle(
+                                            fontSize: 15,
+                                            overflow: TextOverflow.ellipsis),
+                                      ),
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "Price : ",
+                                            style: TextStyle(fontSize: 12),
+                                          ),
+                                          Text(
+                                            "${product.regPrice} ৳",
+                                            style: const TextStyle(fontSize: 12),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Row(
+                                        children: [
+                                          // --- NEW: Item Quantity Selector ---
+                                          InkWell(
+                                            onTap: () => cartController.decrementQty(index),
+                                            child: Container(
+                                              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                                              child: const Icon(Icons.remove, size: 22, color: Colors.black54),
                                             ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                                            child: Text("${product.quantity ?? 1}", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                          ),
+                                          InkWell(
+                                            onTap: () => cartController.incrementQty(index),
+                                            child: Container(
+                                              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(4)),
+                                              child: const Icon(Icons.add, size: 22, color: Colors.black54),
                                             ),
-                                            Text(
-                                              "${cartController.cart[index].regPrice} ৳",style: TextStyle(
-                                              fontSize: 12,
-                                            ),
-
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            // Obx(()=> Text(
-                                            //   "${cartController.productQty.value * salePrice} ৳",style: TextStyle(
-                                            //   fontSize: 16,
-                                            //   color: Colors.red,
-                                            // ),
-                                            //
-                                            // ),),
-                                            const Spacer(),
-                                            InkWell(
-                                              onTap: () async {
-                                                cartController.cart.removeAt(index);
-                                              },
-                                              child: const Icon(Icons.delete_forever, color: Colors.red),
-                                            ),
-                                            const SizedBox(width: 10)
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                          const Spacer(),
+                                          InkWell(
+                                            onTap: () async {
+                                              cartController.removeFromCart(product);
+                                            },
+                                            child: const Icon(Icons.delete_forever, color: Colors.red),
+                                          ),
+                                          const SizedBox(width: 10)
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        }),
-                  ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
                 ),
               ],
             ),
@@ -163,26 +170,22 @@ class Cart extends StatelessWidget {
             Card(
               margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               color: const Color(0xffFFEDE5),
-              shape: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide.none),
+              shape: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: BorderSide.none),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "total_amount".tr,style: TextStyle(
-                      fontSize: 18,
-
+                      "total_amount".tr,
+                      style: const TextStyle(fontSize: 18),
                     ),
-
-                    ),
-                    Obx(
-                          () => Text(
-                        "= ${cartController.productAmount.obs} ৳",style: TextStyle(
-                        fontSize: 18,
-                      ),
-
-                      ),
+                    // --- NEW: Reactive Total Amount Display ---
+                    Text(
+                      "= ${cartController.totalAmount.toStringAsFixed(2)} ৳",
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -190,8 +193,9 @@ class Cart extends StatelessWidget {
             ),
             CommonButton(
               onTap: () async {
-                Get.to(() =>  OrderInfo());
-              }, buttonName: "checkout",
+                Get.to(() => OrderInfo());
+              },
+              buttonName: "checkout",
             ),
             const SizedBox(height: 170)
           ],
